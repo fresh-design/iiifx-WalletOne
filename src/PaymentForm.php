@@ -181,6 +181,9 @@ class PaymentForm {
         return $this->paymentId;
     }
 
+    /**
+     * @return string
+     */
     public function getTransactionId () {
         if ( is_null( $this->transactionId ) ) {
             $this->transactionId = 'WP-' . $this->paymentId . '-' . date( 'ymd' ) . '-' . date( 'His' ) . '-' . rand( 100, 999 );

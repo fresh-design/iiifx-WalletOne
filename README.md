@@ -74,11 +74,31 @@ if ( $w1Form->validateData() ) {
 Проверка результата оплаты Result
 
 ```php
-	# ...
-```
+use iiifx\Component\Payment\WalletOne\PaymentVerify as WalletOneVerify;
 
-Получаем ответ на страницах Success / Fail
+$sellerPurse = 123234345456;
 
-```php
-    # ...
+# Получаем заранее сохраненный номер транзакции
+$transactionId = 'WP-123-140820-142252-934';
+
+$w1Verify = new WalletOneVerify( $sellerPurse );
+
+# Загружаем данные
+$w1Verify->loadFromPOST();
+
+# Проверяем номер транзакции и статус оплаты
+if ( $w1Verify->getTransactionId() === $transactionId && $w1Verify->isPaymentAccepted() ) {
+    # Успешно
+
+    /**
+     * Проверяем данные: сверяем номер заказа, сумму, записываем в логи
+     *
+     * Усли все в порядке - отдаем 'WMI_RESULT=OK'
+     */
+
+    echo 'WMI_RESULT=OK';
+
+} else {
+    # Ошибка, подпись не совпадает
+}
 ```

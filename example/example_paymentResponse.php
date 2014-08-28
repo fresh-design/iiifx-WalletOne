@@ -1,47 +1,30 @@
 <?php
 
-require_once( __DIR__ . '/../src/PaymentForm.php' );
+require_once( __DIR__ . '/../src/PaymentVerify.php' );
 
-use iiifx\Component\Payment\WalletOne\PaymentForm as WalletOneForm;
+use iiifx\Component\Payment\WalletOne\PaymentVerify as WalletOneVerify;
 
 $sellerPurse = 167849679901;
-$paymentAmount = 1.00;
-$currencyCode = 643;
-$orderId = 1000;
-$paymentTypeList = array (
-    'LiqPayMoneyRUB',
-    'CreditCardRUB'
-);
 
-# Создаем форму
-$w1Form = new WalletOneForm( $sellerPurse );
+$transactionId = '...';
 
-# Страницы на которые будут отправлены ответы
-$w1Form
-    ->setSuccessLink( "http://weplay.tv/all/shop_payment/success/{$orderId}/card" )
-    ->setFailLink( "http://weplay.tv/all/shop_payment/fail/{$orderId}/card" );
+$w1Verify = new WalletOneVerify( $sellerPurse );
 
-# Задаем разрешенные методы оплаты
-if ( $paymentTypeList && is_array( $paymentTypeList ) ) {
-    foreach ( $paymentTypeList as $paymentType ) {
-        $w1Form->addPaymentType( $paymentType );
-    }
-}
+# Загружаем данные
+$w1Verify->loadFromPOST();
 
-# Параметры оплаты
-$w1Form
-    ->setPaymentAmount( $paymentAmount )
-    ->setCurrencyCode( $currencyCode )
-    ->setPaymentId( $orderId )
-    ->setComment( "Оплата заказа #{$orderId}" )
-    ->addCustomerValue( 'orderId', $orderId );
+# Проверяем номер транзакции и статус оплаты
+if ( $w1Verify->getTransactionId() === $transactionId && $w1Verify->isPaymentAccepted() ) {
+    # Успешно
 
-# Проверяем данные
-if ( $w1Form->validateData() ) {
+    /**
+     * Проверяем данные: сверяем номер заказа, сумму, записываем в логи
+     *
+     * Усли все в порядке - отдаем 'WMI_RESULT=OK'
+     */
 
-    # Включаем автосабмит формы сразу после загрузки страницы
-    $w1Form->enableFormAutoSubmit();
-    # Выводим форму
-    echo $w1Form->buildFormView();
+    echo 'WMI_RESULT=OK';
 
+} else {
+    # Ошибка, подпись не совпадает
 }
