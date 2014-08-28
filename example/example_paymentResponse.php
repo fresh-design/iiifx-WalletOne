@@ -18,6 +18,8 @@ $orderId = $w1Verify->getCustomerValue( 'orderId' );
 # Проверяем номер транзакции и статус
 if ( $w1Verify->getTransactionId() === $transactionId && $w1Verify->isPaymentAccepted() ) {
 
+    # А также сверяем номер заказа, сумму заказа и тд.
+
     # Успешно
     echo 'WMI_RESULT=OK';
 
