@@ -4,6 +4,7 @@ namespace iiifx\Component\Payment\WalletOne;
 
 /**
  * Class PaymentForm
+ *
  * @package iiifx\Component\Payment\WalletOne
  */
 class PaymentForm {
@@ -49,6 +50,10 @@ class PaymentForm {
      * @var int
      */
     private $currencyCode;
+    /**
+     * @var string
+     */
+    private $transactionId;
 
     /**
      * @var array
@@ -165,7 +170,7 @@ class PaymentForm {
      * @return $this
      */
     public function setPaymentId ( $paymentId ) {
-        $this->paymentId = (int) $paymentId . '_';
+        $this->paymentId = (int) $paymentId;
         return $this;
     }
 
@@ -174,6 +179,13 @@ class PaymentForm {
      */
     public function getPaymentId () {
         return $this->paymentId;
+    }
+
+    public function getTransactionId () {
+        if ( is_null( $this->transactionId ) ) {
+            $this->transactionId = $this->paymentId . '_' . date( 'YmdHis' ) . '_' . md5( time() . rand( 9999, 10000 ) );
+        }
+        return $this->transactionId;
     }
 
     /**
@@ -327,10 +339,10 @@ class PaymentForm {
         if ( $this->getPaymentAmount() <= 0  ) {
             return FALSE;
         }
-        if ( $this->getPaymentId() <= 0 ) {
+        if ( !$this->getComment() ) {
             return FALSE;
         }
-        if ( !$this->getComment() ) {
+        if ( !$this->getCurrencyCode() ) {
             return FALSE;
         }
         return TRUE;
@@ -346,8 +358,12 @@ class PaymentForm {
     <input type="hidden" name="WMI_PAYMENT_AMOUNT" value="{$this->getPaymentAmount()}">
     <input type="hidden" name="WMI_CURRENCY_ID" value="{$this->getCurrencyCode()}">
     <input type="hidden" name="WMI_DESCRIPTION" value="{$this->getBase64Comment()}">
-    <input type="hidden" name="WMI_PAYMENT_NO" value="{$this->getPaymentId()}">
 HTML;
+        if ( !is_null( $this->getPaymentId() ) ) {
+            $inputsData .= <<<HTML
+\n    <input type="hidden" name="WMI_PAYMENT_NO" value="{$this->getTransactionId()}">
+HTML;
+        }
         if ( !is_null( $this->getSuccessLink() ) ) {
             $inputsData .= <<<HTML
 \n    <input type="hidden" name="WMI_SUCCESS_URL" value="{$this->getSuccessLink()}">
@@ -361,7 +377,7 @@ HTML;
         if ( $this->getPaymentTypeList() ) {
             foreach ( $this->getPaymentTypeList() as $paymentType ) {
                 $inputsData .= <<<HTML
-\n    <input name="WMI_PTENABLED" value="{$paymentType}"/>
+\n    <input type="hidden" name="WMI_PTENABLED" value="{$paymentType}"/>
 HTML;
             }
         }
