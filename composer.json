@@ -1,0 +1,23 @@
+{
+    "name":"fresh-design/iiifx-walletone",
+    "type": "library",
+    "description": "WalletOne payment",
+    "keywords": ["w1","wallet one","pay"],
+    "homepage": "https://github.com/fresh-design/iiifx-WalletOne.git",
+    "version": "1.0.0",
+    "license": "GPL",
+    "authors": [
+        {
+            "name": "Vitaliy IIIFX Khomenko",
+            "email": "iiifx@yandex.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "iiifx\\Component\\Payment\\WalletOne\\": "src/"
+        }
+    }
+}
