@@ -47,23 +47,6 @@ class PaymentVerify {
     public function __construct ( ) {}
 
     /**
-     * @param string $sellerPurse
-     *
-     * @return $this
-     */
-    public function setSellerPurse ( $sellerPurse ) {
-        $this->sellerPurse = trim( $sellerPurse );
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSellerPurse () {
-        return $this->sellerPurse;
-    }
-
-    /**
      * @return string
      */
     public function getTransactionId () {
@@ -85,10 +68,17 @@ class PaymentVerify {
     }
 
     /**
-     * @return null|string
+     * @return string
      */
     public function getPaymentAmount () {
         return (float) $this->getResponseValue( 'WMI_PAYMENT_AMOUNT' );
+    }
+
+    /**
+     * @return string
+     */
+    public function getSellerPurse () {
+        return $this->getResponseValue( 'WMI_MERCHANT_ID' );
     }
 
 }
