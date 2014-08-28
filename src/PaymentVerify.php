@@ -42,11 +42,9 @@ class PaymentVerify {
     private $sellerPurse;
 
     /**
-     * @param string $sellerPurse
+     *
      */
-    public function __construct ( $sellerPurse ) {
-        $this->setSellerPurse( $sellerPurse );
-    }
+    public function __construct ( ) {}
 
     /**
      * @param string $sellerPurse

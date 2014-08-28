@@ -8,7 +8,7 @@ $sellerPurse = 167849679901;
 
 $transactionId = '...';
 
-$w1Verify = new WalletOneVerify( $sellerPurse );
+$w1Verify = new WalletOneVerify();
 
 # Загружаем данные
 $w1Verify->loadFromPOST();
