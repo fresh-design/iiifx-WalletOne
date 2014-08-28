@@ -40,8 +40,7 @@ $w1Form
 if ( $w1Form->validateData() ) {
 
     # Включаем автосабмит формы сразу после загрузки страницы
-    $w1Form->enableFormAutoSubmit();
-
+    //$w1Form->enableFormAutoSubmit();
     # Выводим форму
     echo $w1Form->buildFormView();
 

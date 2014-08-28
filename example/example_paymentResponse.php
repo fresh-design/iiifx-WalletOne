@@ -1,30 +1,10 @@
-### Webmoney
+<?php
 
-Модуль оплаты WalletOne
+require_once( __DIR__ . '/../src/PaymentForm.php' );
 
-##### Подключение через Composer:
-
-composer.json
-
-    "require": {
-        "fresh-design/iiifx-WalletOne": "dev-master"
-    },
-    "repositories": [
-        {
-            "type": "git",
-            "url": "https://github.com/fresh-design/iiifx-WalletOne"
-        }
-    ]
-
-
-##### Использование:
-
-Отправка запроса с пользователем:
-
-```php
 use iiifx\Component\Payment\WalletOne\PaymentForm as WalletOneForm;
 
-$sellerPurse = 123234345456;
+$sellerPurse = 167849679901;
 $paymentAmount = 1.00;
 $currencyCode = 643;
 $orderId = 1000;
@@ -38,8 +18,8 @@ $w1Form = new WalletOneForm( $sellerPurse );
 
 # Страницы на которые будут отправлены ответы
 $w1Form
-    ->setSuccessLink( "http://site.me/shop/payment/success/{$orderId}" )
-    ->setFailLink( "http://site.me/shop/payment/fail/{$orderId}" );
+    ->setSuccessLink( "http://weplay.tv/all/shop_payment/success/{$orderId}/card" )
+    ->setFailLink( "http://weplay.tv/all/shop_payment/fail/{$orderId}/card" );
 
 # Задаем разрешенные методы оплаты
 if ( $paymentTypeList && is_array( $paymentTypeList ) ) {
@@ -59,26 +39,9 @@ $w1Form
 # Проверяем данные
 if ( $w1Form->validateData() ) {
 
-    # Получаем и сохраняем номер транзакции
-    $transactionId = $w1Form->gerTransactionId();
-
     # Включаем автосабмит формы сразу после загрузки страницы
     $w1Form->enableFormAutoSubmit();
-
     # Выводим форму
     echo $w1Form->buildFormView();
 
 }
-```
-
-Проверка результата оплаты Result
-
-```php
-	# ...
-```
-
-Получаем ответ на страницах Success / Fail
-
-```php
-    # ...
-```
