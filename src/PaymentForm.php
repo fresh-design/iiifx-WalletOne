@@ -183,7 +183,7 @@ class PaymentForm {
 
     public function getTransactionId () {
         if ( is_null( $this->transactionId ) ) {
-            $this->transactionId = 'WP-' . $this->paymentId . '-' . date( 'Ymd' ) . '-' . date( 'Ymd' ) . '-' . rand( 100, 999 );
+            $this->transactionId = 'WP-' . $this->paymentId . '-' . date( 'ymd' ) . '-' . date( 'His' ) . '-' . rand( 100, 999 );
         }
         return $this->transactionId;
     }
