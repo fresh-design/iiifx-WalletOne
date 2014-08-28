@@ -81,7 +81,7 @@ $sellerPurse = 123234345456;
 # Получаем заранее сохраненный номер транзакции
 $transactionId = 'WP-123-140820-142252-934';
 
-$w1Verify = new WalletOneVerify( $sellerPurse );
+$w1Verify = new WalletOneVerify();
 
 # Загружаем данные
 $w1Verify->loadFromPOST();
