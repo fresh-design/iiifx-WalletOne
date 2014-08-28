@@ -88,17 +88,11 @@ $w1Verify->loadFromPOST();
 
 # Проверяем номер транзакции и статус оплаты
 if ( $w1Verify->getTransactionId() === $transactionId && $w1Verify->isPaymentAccepted() ) {
+
     # Успешно
-
-    /**
-     * Проверяем данные: сверяем номер заказа, сумму, записываем в логи
-     *
-     * Усли все в порядке - отдаем 'WMI_RESULT=OK'
-     */
-
     echo 'WMI_RESULT=OK';
 
 } else {
-    # Ошибка, подпись не совпадает
+    # Ошибка
 }
 ```

@@ -86,54 +86,11 @@ class PaymentVerify {
         return( strtolower( $this->getOrderState() ) === 'accepted' );
     }
 
-
-    /*
-    public function getPaymentId () {
-        return $this->getResponseValue( 'LMI_PAYMENT_NO' );
-    }
-
-    public function getPaymentInvoiseId () {
-        return $this->getResponseValue( 'LMI_SYS_INVS_NO' );
-    }
-
-    public function getPaymentTransferId () {
-        return $this->getResponseValue( 'LMI_SYS_TRANS_NO' );
-    }
-
-    public function getTransferDate () {
-        return $this->getResponseValue( 'LMI_SYS_TRANS_DATE' );
-    }
-
-    public function getTransferTimestamp () {
-        if ( $this->getTransferDate() ) {
-            return strtotime( $this->getTransferDate() );
-        }
-        return NULL;
-    }
-
-    public function getPayerPurse () {
-        return $this->getResponseValue( 'LMI_PAYER_PURSE' );
-    }
-
-    public function getPayerWM () {
-        return $this->getResponseValue( 'LMI_PAYER_WM' );
-    }
-
+    /**
+     * @return null|string
+     */
     public function getPaymentAmount () {
-        return $this->getResponseValue( 'LMI_PAYMENT_AMOUNT' );
+        return (float) $this->getResponseValue( 'WMI_PAYMENT_AMOUNT' );
     }
-
-    public function buildSignatureString () {
-        return new \Exception(); # TODO Нужно реализовать создание подписи
-    }
-
-    public function buildControlSignature () {
-        return strtoupper( md5( $this->buildSignatureString() ) );
-    }
-
-    public function verifyResponseSignature () {
-        return ( $this->getResponseValue( 'WMI_SIGNATURE' ) === $this->buildControlSignature() );
-    }
-    */
 
 }

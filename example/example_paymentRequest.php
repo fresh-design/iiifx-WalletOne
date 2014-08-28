@@ -39,8 +39,11 @@ $w1Form
 # Проверяем данные
 if ( $w1Form->validateData() ) {
 
+    # Сохраняем номер транзакции
+    $transactionId = $w1Form->getTransactionId();
+
     # Включаем автосабмит формы сразу после загрузки страницы
-    //$w1Form->enableFormAutoSubmit();
+    $w1Form->enableFormAutoSubmit();
     # Выводим форму
     echo $w1Form->buildFormView();
 

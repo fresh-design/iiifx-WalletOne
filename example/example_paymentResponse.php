@@ -13,16 +13,12 @@ $w1Verify = new WalletOneVerify( $sellerPurse );
 # Загружаем данные
 $w1Verify->loadFromPOST();
 
-# Проверяем номер транзакции и статус оплаты
+$orderId = $w1Verify->getCustomerValue( 'orderId' );
+
+# Проверяем номер транзакции и статус
 if ( $w1Verify->getTransactionId() === $transactionId && $w1Verify->isPaymentAccepted() ) {
+
     # Успешно
-
-    /**
-     * Проверяем данные: сверяем номер заказа, сумму, записываем в логи
-     *
-     * Усли все в порядке - отдаем 'WMI_RESULT=OK'
-     */
-
     echo 'WMI_RESULT=OK';
 
 } else {
