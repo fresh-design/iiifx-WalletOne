@@ -1,6 +1,6 @@
-### Webmoney
+### WalletOne
 
-Модуль оплаты WalletOne
+Модуль оплаты WalletOne [ https://www.walletone.com ]
 
 ##### Подключение через Composer:
 
