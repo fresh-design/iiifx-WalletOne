@@ -186,7 +186,7 @@ class PaymentForm {
      */
     public function getTransactionId () {
         if ( is_null( $this->transactionId ) ) {
-            $this->transactionId = 'W1-' . $this->paymentId . '-' . date( 'ymdHis' ) . '-' . $this->getPaymentAmount() . '-' . rand( 100, 999 );
+            $this->transactionId = 'W1-' . $this->paymentId . '-' . date( 'ymdHis' ) . str_replace( '.', '', (float) $this->getPaymentAmount() ) . rand( 100, 999 );
         }
         return $this->transactionId;
     }
