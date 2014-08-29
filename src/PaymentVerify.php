@@ -16,20 +16,20 @@ class PaymentVerify {
      * @var array
      */
     private $fieldList = array (
-        'WMI_MERCHANT_ID',
-        'WMI_PAYMENT_AMOUNT',
-        'WMI_CURRENCY_ID',
-        'WMI_TO_USER_ID',
-        'WMI_PAYMENT_NO',
-        'WMI_ORDER_ID',
-        'WMI_DESCRIPTION',
-        'WMI_SUCCESS_URL',
-        'WMI_FAIL_URL',
-        'WMI_EXPIRED_DATE',
-        'WMI_CREATE_DATE',
-        'WMI_UPDATE_DATE',
-        'WMI_ORDER_STATE', # Accepted
-        'WMI_SIGNATURE'
+        'WMI_MERCHANT_ID'    => 'string',
+        'WMI_PAYMENT_AMOUNT' => 'string',
+        'WMI_CURRENCY_ID'    => 'string',
+        'WMI_TO_USER_ID'     => 'string',
+        'WMI_PAYMENT_NO'     => 'string',
+        'WMI_ORDER_ID'       => 'string',
+        'WMI_DESCRIPTION'    => 'string',
+        'WMI_SUCCESS_URL'    => 'string',
+        'WMI_FAIL_URL'       => 'string',
+        'WMI_EXPIRED_DATE'   => 'string',
+        'WMI_CREATE_DATE'    => 'string',
+        'WMI_UPDATE_DATE'    => 'string',
+        'WMI_ORDER_STATE'    => 'string', # Accepted
+        'WMI_SIGNATURE'      => 'string'
     );
 
     /**
@@ -44,7 +44,8 @@ class PaymentVerify {
     /**
      *
      */
-    public function __construct ( ) {}
+    public function __construct () {
+    }
 
     /**
      * @return string
@@ -64,7 +65,7 @@ class PaymentVerify {
      * @return bool
      */
     public function isPaymentAccepted () {
-        return( strtolower( $this->getOrderState() ) === 'accepted' );
+        return ( strtolower( $this->getOrderState() ) === 'accepted' );
     }
 
     /**

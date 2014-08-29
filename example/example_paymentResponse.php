@@ -1,5 +1,7 @@
 <?php
 
+require_once( __DIR__ . '/../src/Helper/ResponseCustomerFields.php' );
+require_once( __DIR__ . '/../src/Helper/ResponseDataLoader.php' );
 require_once( __DIR__ . '/../src/PaymentVerify.php' );
 
 use iiifx\Component\Payment\WalletOne\PaymentVerify as WalletOneVerify;
