@@ -66,10 +66,53 @@ class PaymentForm {
     private $paymentTypeList = array ();
 
     /**
+     * @var string
+     */
+    private $secretKey;
+    /**
+     * @var string
+     */
+    private $signatureMethod;
+
+    /**
      * @param string $sellerPurse
      */
     public function __construct ( $sellerPurse ) {
         $this->setSellerPurse( $sellerPurse );
+    }
+
+    /**
+     * @return string
+     */
+    public function getSecretKey() {
+        return $this->secretKey;
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return $this
+     */
+    public function setSecretKey($key) {
+        $this->secretKey = $key;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSignatureMethod() {
+        return $this->signatureMethod;
+    }
+
+    /**
+     * @param string $method
+     *
+     * @return $this
+     */
+    public function setSignatureMethod($method) {
+        $this->signatureMethod = $method;
+        return $this;
     }
 
     /**
@@ -170,7 +213,7 @@ class PaymentForm {
      * @return $this
      */
     public function setPaymentId ( $paymentId ) {
-        $this->paymentId = (int) $paymentId;
+        $this->paymentId = $paymentId;
         return $this;
     }
 
@@ -348,66 +391,112 @@ class PaymentForm {
         if ( !$this->getCurrencyCode() ) {
             return FALSE;
         }
+        if ($this->getSignatureMethod() and !$this->getSecretKey() ) {
+            return FALSE;
+        }
         return TRUE;
     }
 
     /**
+     * @param string $encoding
+     *
      * @return string
      */
-    public function buildFormView () {
+    public function buildFormView ($encoding = 'UTF-8') {
         $formTagId = ( !is_null( $this->getFormTagId() ) ) ? "id=\"{$this->getFormTagId()}\"" : NULL;
-        $inputsData = <<<HTML
-    <input type="hidden" name="WMI_MERCHANT_ID" value="{$this->getSellerPurse()}">
-    <input type="hidden" name="WMI_PAYMENT_AMOUNT" value="{$this->getPaymentAmount()}">
-    <input type="hidden" name="WMI_CURRENCY_ID" value="{$this->getCurrencyCode()}">
-    <input type="hidden" name="WMI_DESCRIPTION" value="{$this->getBase64Comment()}">
-HTML;
+        $fields = array();
+        $fields['WMI_MERCHANT_ID'] = $this->getSellerPurse();
+        $fields['WMI_PAYMENT_AMOUNT'] = $this->getPaymentAmount();
+        $fields['WMI_CURRENCY_ID'] = $this->getCurrencyCode();
+        $fields['WMI_DESCRIPTION'] = $this->getBase64Comment();
+
         if ( !is_null( $this->getPaymentId() ) ) {
-            $inputsData .= <<<HTML
-\n    <input type="hidden" name="WMI_PAYMENT_NO" value="{$this->getTransactionId()}">
-HTML;
+            $fields['WMI_PAYMENT_NO'] = $this->getTransactionId();
         }
+
         if ( !is_null( $this->getSuccessLink() ) ) {
-            $inputsData .= <<<HTML
-\n    <input type="hidden" name="WMI_SUCCESS_URL" value="{$this->getSuccessLink()}">
-HTML;
+            $fields['WMI_SUCCESS_URL'] = $this->getSuccessLink();
         }
+
         if ( !is_null( $this->getFailLink() ) ) {
-            $inputsData .= <<<HTML
-\n    <input type="hidden" name="WMI_FAIL_URL" value="{$this->getFailLink()}">
-HTML;
+            $fields['WMI_FAIL_URL'] = $this->getFailLink();
         }
+
         if ( $this->getPaymentTypeList() ) {
-            foreach ( $this->getPaymentTypeList() as $paymentType ) {
-                $inputsData .= <<<HTML
-\n    <input type="hidden" name="WMI_PTENABLED" value="{$paymentType}"/>
-HTML;
-            }
+            $fields['WMI_PTENABLED'] = $this->getPaymentTypeList();
         }
+
         if ( $this->getCustomerValues() ) {
             foreach ( $this->getCustomerValues() as $name => $value ) {
-                $inputsData .= <<<HTML
-\n    <input type="hidden" name="CUSTOMER_{$name}" value="{$value}">
-HTML;
+                $fields['CUSTOMER_' . $name] = $value;
             }
         }
-        if ( $this->isEnabledFormAutoSubmit() ) {
-            $submitScript = <<<HTML
-<script type="text/javascript">
-    document.getElementById( '{$this->getFormTagId()}' ).submit();
-</script>
-HTML;
-        } else {
-            $submitScript = NULL;
+
+        /*
+         * Сортировка значений внутри полей и составление сообщения
+         */
+        foreach($fields as $name => $val) {
+            if (is_array($val)) {
+                usort($val, "strcasecmp");
+                $fields[$name] = $val;
+            }
         }
-        $inputsData = ltrim( $inputsData, "\r\n" );
-        return <<<HTML
-<!--suppress ALL -->
-<form method="POST" {$formTagId} action="{$this->getFormActionLink()}" accept-charset="UTF-8">
-{$inputsData}
-</form>
-{$submitScript}
-HTML;
+
+        uksort($fields, "strcasecmp");
+        $fieldValues = "";
+
+        foreach($fields as $value) {
+            if (is_array($value)) {
+                foreach ($value as $v) {
+                    if ($encoding != 'windows-1251') {
+                        $v = iconv($encoding, "windows-1251", $v);
+                    }
+                    $fieldValues .= $v;
+                }
+            }
+            else {
+                if ($encoding != 'windows-1251') {
+                    $value = iconv($encoding, "windows-1251", $value);
+                }
+
+                $fieldValues .= $value;
+            }
+        }
+
+        if ($this->getSignatureMethod() AND $this->getSecretKey()) {
+            if ($this->getSignatureMethod() == 'md5') {
+                $signature = base64_encode(pack("H*", md5($fieldValues . $this->getSecretKey())));
+                $fields["WMI_SIGNATURE"] = $signature;
+            }
+            elseif ($this->getSignatureMethod() == 'sha1') {
+                $signature = base64_encode(pack("H*", sha1($fieldValues . $this->getSecretKey())));
+                $fields["WMI_SIGNATURE"] = $signature;
+            }
+
+        }
+
+        if ( $this->isEnabledFormAutoSubmit() ) {
+            $submitScript = '<script type="text/javascript">document.getElementById( \'' . $this->getFormTagId() . '\' ).submit();</script>';
+        } else {
+            $submitScript = '';
+        }
+
+        $form = '<form method="POST" ' . $formTagId . ' action="' . $this->getFormActionLink() . '" accept-charset="UTF-8">';
+
+        foreach($fields as $key => $val) {
+            if (is_array($val)) {
+                foreach ($val as $value) {
+                    $form .= '<input type="hidden" name="' . $key . '" value="' . $value . '"/>';
+                }
+            }
+            else {
+                $form .= '<input type="hidden" name="' . $key . '" value="' . $val . '"/>';
+            }
+        }
+
+        $form .= '</form>' . $submitScript;
+
+        return $form;
     }
 
 }

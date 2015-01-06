@@ -8,7 +8,9 @@ use iiifx\Component\Payment\WalletOne\PaymentVerify as WalletOneVerify;
 
 $sellerPurse = 167849679901;
 
-$transactionId = '...';
+# Секретный ключ
+
+$secret = '...';
 
 $w1Verify = new WalletOneVerify();
 
@@ -16,11 +18,14 @@ $w1Verify = new WalletOneVerify();
 $w1Verify->loadFromPOST();
 
 $orderId = $w1Verify->getCustomerValue( 'orderId' );
+$w1Verify->loadFromPOST();
 
-# Проверяем номер транзакции и статус
-if ( $w1Verify->getTransactionId() === $transactionId && $w1Verify->isPaymentAccepted() ) {
+# Проверяем подпись и статус
+if ( $w1Verify->checkSignature('sha1', $secret) && $w1Verify->isPaymentAccepted() ) {
 
     # А также сверяем номер заказа, сумму заказа и тд.
+
+    $transactionId = $w1Verify->getTransactionId();
 
     # Успешно
     echo 'WMI_RESULT=OK';

@@ -12,6 +12,7 @@ $paymentTypeList = array (
     'LiqPayMoneyRUB',
     'CreditCardRUB'
 );
+$secret = '...';
 
 # Создаем форму
 $w1Form = new WalletOneForm( $sellerPurse );
@@ -34,7 +35,9 @@ $w1Form
     ->setCurrencyCode( $currencyCode )
     ->setPaymentId( $orderId )
     ->setComment( "Оплата заказа #{$orderId}" )
-    ->addCustomerValue( 'orderId', $orderId );
+    ->addCustomerValue( 'orderId', $orderId )
+    ->setSecretKey($secret)
+    ->setSignatureMethod('sha1');
 
 # Проверяем данные
 if ( $w1Form->validateData() ) {
