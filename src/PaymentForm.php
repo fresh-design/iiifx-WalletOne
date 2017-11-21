@@ -472,7 +472,7 @@ class PaymentForm {
         if ( !$this->getOrderItems() ) {
             return FALSE;
         }
-        
+
         return TRUE;
     }
 
@@ -513,8 +513,8 @@ class PaymentForm {
             $fields['WMI_CUSTOMER_EMAIL'] = $this->getCustomerEmail();
         }
 
-        if ( $items = $this->getOrderItems() ) {
-            $fields['WMI_ORDER_ITEMS'] = $items;
+        if ( $this->getOrderItems() ) {
+            $fields['WMI_ORDER_ITEMS'] = $this->getOrderItems();
         }
 
         if ( $this->getCustomerValues() ) {
@@ -580,7 +580,9 @@ class PaymentForm {
                     $form .= '<input type="hidden" name="' . $key . '" value="' . $value . '"/>';
                 }
             }
-            else {
+            elseif($key === 'WMI_ORDER_ITEMS') {
+                $form .= '<input type="hidden" name="' . $key . '" value=\'' . $val . '\'/>';
+            } else {
                 $form .= '<input type="hidden" name="' . $key . '" value="' . $val . '"/>';
             }
         }
