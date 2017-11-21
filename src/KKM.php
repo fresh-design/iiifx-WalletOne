@@ -183,7 +183,7 @@ class KKM
         if( !$kkm->validateDecimalData($kkm->getSubTotal()) ) {
             return FALSE;
         }
-        if( $kkm->validateDecimalData($kkm->getTax()) ) {
+        if( !$kkm->validateDecimalData($kkm->getTax()) ) {
             return FALSE;
         }
         if( !$kkm->getTaxType() ) {
