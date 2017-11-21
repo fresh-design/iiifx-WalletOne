@@ -48,15 +48,37 @@ if ( $paymentTypeList && is_array( $paymentTypeList ) ) {
     }
 }
 
+# Создаем объект(ы) ККМ
+$kkm = new KKM();
+
+$kkm->setTitle($sendComment)
+    ->setQuantity($quantity)
+    ->setUnitPrice($paymentAmount)
+    ->setSubTotal($paymentAmount)
+    ->setTaxType(KKM::TAX1)
+    ->setTax($taxCount);
+
+# Проверяем на валидность и формируем массив с объектом(и)
+
+if(!$kkmJson = KKM::arrayOfObjectsToJson([$kkm])) {
+    throw new ErrorException(__('Проблема при формировании объекта  ККМ'));
+}
+
+
 # Параметры оплаты
 $w1Form
     ->setPaymentAmount( $paymentAmount )
     ->setCurrencyCode( $currencyCode )
     ->setPaymentId( $orderId )
     ->setComment( "Оплата заказа #{$orderId}" )
-    ->addCustomerValue( 'orderId', $orderId );
+    ->addCustomerValue( 'orderId', $orderId )
+    //-> Добавляем поля для ККМ json-объект и номер телефона или email покупателя
+    ->setOrderItems($kkmJson)
+    ->setCustomerEmail($customerEmail)
+    //->setCustomerEmail($customerPhone)
 
 # Проверяем данные
+
 if ( $w1Form->validateData() ) {
 
     # Получаем и сохраняем номер транзакции
