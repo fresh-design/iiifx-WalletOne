@@ -218,7 +218,7 @@ class KKM
                 'Tax'       => $orderItem->getTax()
             ];
         }
-        return json_encode($items);
+        return json_encode($items, JSON_UNESCAPED_UNICODE);
     }
 
     /**
