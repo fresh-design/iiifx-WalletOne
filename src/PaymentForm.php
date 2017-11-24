@@ -577,13 +577,11 @@ class PaymentForm {
         foreach($fields as $key => $val) {
             if (is_array($val)) {
                 foreach ($val as $value) {
-                    $form .= '<input type="hidden" name="' . $key . '" value="' . $value . '"/>';
+                    $form .= "<input type='hidden' name='$key' value='$value'/>";
                 }
             }
-            elseif($key === 'WMI_ORDER_ITEMS') {
-                $form .= '<input type="hidden" name="' . $key . '" value=\'' . $val . '\'/>';
-            } else {
-                $form .= '<input type="hidden" name="' . $key . '" value="' . $val . '"/>';
+            else {
+                $form .= "<input type='hidden' name='$key' value='$val'/>";
             }
         }
 
