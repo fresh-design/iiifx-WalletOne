@@ -12,7 +12,7 @@ class PaymentForm {
     /**
      * @var string
      */
-    private $gateLink = 'https://www.walletone.com/checkout/default.aspx';
+    private $gateLink = 'https://wl.walletone.com/checkout/checkout/Index';
 
     /**
      * @var string
@@ -69,16 +69,68 @@ class PaymentForm {
      * @var string
      */
     private $secretKey;
+
     /**
      * @var string
      */
     private $signatureMethod;
 
     /**
+     * @var string|null
+     */
+    private $customerPhone = null;
+
+    /**
+     * @var string|null
+     */
+    private $customerEmail = null;
+
+    /**
+     * @var string
+     */
+    private $orderItems;
+
+    /**
      * @param string $sellerPurse
      */
     public function __construct ( $sellerPurse ) {
         $this->setSellerPurse( $sellerPurse );
+    }
+
+    /**
+     * @return string
+     */
+    public function getCustomerPhone()
+    {
+        return $this->customerPhone;
+    }
+
+    /**
+     * @param string $customerPhone
+     * @return PaymentForm
+     */
+    public function setCustomerPhone($customerPhone)
+    {
+        $this->customerPhone = $customerPhone;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCustomerEmail()
+    {
+        return $this->customerEmail;
+    }
+
+    /**
+     * @param string $customerEmail
+     * @return PaymentForm
+     */
+    public function setCustomerEmail($customerEmail)
+    {
+        $this->customerEmail = $customerEmail;
+        return $this;
     }
 
     /**
@@ -313,6 +365,24 @@ class PaymentForm {
     }
 
     /**
+     * @return string
+     */
+    public function getOrderItems()
+    {
+        return $this->orderItems;
+    }
+
+    /**
+     * @param $orderItems
+     * @return $this
+     */
+    public function setOrderItems($orderItems)
+    {
+        $this->orderItems = $orderItems;
+        return $this;
+    }
+
+    /**
      * @param string $paymentType
      *
      * @return $this
@@ -385,15 +455,24 @@ class PaymentForm {
         if ( $this->getPaymentAmount() <= 0  ) {
             return FALSE;
         }
-        if ( !$this->getComment() ) {
+        if ( !$this->getComment()) {
             return FALSE;
         }
         if ( !$this->getCurrencyCode() ) {
             return FALSE;
         }
-        if ($this->getSignatureMethod() and !$this->getSecretKey() ) {
+        if ( $this->getSignatureMethod() and !$this->getSecretKey() ) {
             return FALSE;
         }
+
+        if ( !$this->getCustomerEmail() && !$this->getCustomerPhone() ) {
+            return FALSE;
+        }
+
+        if ( !$this->getOrderItems() ) {
+            return FALSE;
+        }
+
         return TRUE;
     }
 
@@ -424,6 +503,18 @@ class PaymentForm {
 
         if ( $this->getPaymentTypeList() ) {
             $fields['WMI_PTENABLED'] = $this->getPaymentTypeList();
+        }
+
+        if ( $this->getCustomerPhone() ) {
+            $fields['WMI_CUSTOMER_PHONE'] = $this->getCustomerPhone();
+        }
+
+        if ( !$this->getCustomerPhone() && $this->getCustomerEmail() ) {
+            $fields['WMI_CUSTOMER_EMAIL'] = $this->getCustomerEmail();
+        }
+
+        if ( $this->getOrderItems() ) {
+            $fields['WMI_ORDER_ITEMS'] = $this->getOrderItems();
         }
 
         if ( $this->getCustomerValues() ) {
@@ -486,11 +577,11 @@ class PaymentForm {
         foreach($fields as $key => $val) {
             if (is_array($val)) {
                 foreach ($val as $value) {
-                    $form .= '<input type="hidden" name="' . $key . '" value="' . $value . '"/>';
+                    $form .= "<input type='hidden' name='$key' value='$value'/>";
                 }
             }
             else {
-                $form .= '<input type="hidden" name="' . $key . '" value="' . $val . '"/>';
+                $form .= "<input type='hidden' name='$key' value='$val'/>";
             }
         }
 
