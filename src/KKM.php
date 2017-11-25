@@ -11,7 +11,6 @@ namespace iiifx\Component\Payment\WalletOne;
 class KKM
 {
     const PRICE_PATTERN =  '/^\d+(?:\.\d{2})?$/';
-    const QUANTITY_PATTERN =  '/^\d+(?:\.\d{3})?$/';
 
     /**
      * tax_ru_1 —без НДС;
@@ -27,6 +26,15 @@ class KKM
     const TAX4 = 'tax_ru_4';
     const TAX5 = 'tax_ru_5';
     const TAX6 = 'tax_ru_6';
+
+    public static $taxList = [
+        self::TAX1,
+        self::TAX2,
+        self::TAX3,
+        self::TAX4,
+        self::TAX5,
+        self::TAX6
+    ];
 
     /**
      * @var string
@@ -169,25 +177,26 @@ class KKM
     /**
      * @param KKM $kkm
      * @return bool
+     * @throws \ErrorException
      */
     public static function validateKKMObject(KKM $kkm) {
         if( !$kkm->getTitle() ) {
-            return FALSE;
+            throw new \ErrorException('Invalid Tile');
         }
-        if( !$kkm->validateCountData($kkm->getQuantity()) ) {
-            return FALSE;
+        if( !$kkm->validateDecimalData($kkm->getQuantity()) ) {
+            throw new \ErrorException('Invalid Quantity');
         }
         if( !$kkm->validateDecimalData($kkm->getUnitPrice()) ) {
-            return FALSE;
+            throw new \ErrorException('Invalid UnitPrice');
         }
         if( !$kkm->validateDecimalData($kkm->getSubTotal()) ) {
-            return FALSE;
+            throw new \ErrorException('Invalid SubTotal');
         }
         if( !$kkm->validateDecimalData($kkm->getTax()) ) {
-            return FALSE;
+            throw new \ErrorException('Invalid Tax');
         }
-        if( !$kkm->getTaxType() ) {
-            return FALSE;
+        if( !$kkm->getTaxType() && !in_array($kkm->getTaxType(), self::$taxList) ) {
+            throw new \ErrorException('Invalid TaxType');
         }
         return TRUE;
     }
@@ -197,9 +206,14 @@ class KKM
      * @return bool|string
      */
     public static function arrayOfObjectsToJson(array $orderItems) {
-        $items = [];
+
+        $items = '[';
+        $count = count($orderItems);
+
         /** @var self $orderItem */
-        foreach ($orderItems as $orderItem) {
+        foreach ($orderItems as $key => $orderItem) {
+
+            $items .= '{';
 
             if(!$orderItem instanceof KKM) {
                 return FALSE;
@@ -209,16 +223,18 @@ class KKM
                 return FALSE;
             }
 
-            $items[] = [
-                'Title'     => $orderItem->getTitle(),
-                'Quantity'  => $orderItem->getQuantity(),
-                'UnitPrice' => $orderItem->getUnitPrice(),
-                'SubTotal'  => $orderItem->getSubTotal(),
-                'TaxType'   => $orderItem->getTaxType(),
-                'Tax'       => $orderItem->getTax()
-            ];
+            $items .= '"Title": "'.$orderItem->getTitle().'",';
+            $items .= '"Quantity": '.$orderItem->getQuantity().',';
+            $items .= '"UnitPrice": '.$orderItem->getUnitPrice().',';
+            $items .= '"SubTotal": '.$orderItem->getSubTotal().',';
+            $items .= '"TaxType": "'.$orderItem->getTaxType().'",';
+            $items .= '"Tax": '.$orderItem->getTax();
+            $items .= $key + 1 === $count ? '}' : '},';
         }
-        return json_encode($items, JSON_UNESCAPED_UNICODE);
+
+        $items .= ']';
+
+        return $items;
     }
 
     /**
@@ -227,13 +243,5 @@ class KKM
      */
     protected function validateDecimalData($decimal) {
         return $decimal && preg_match(self::PRICE_PATTERN, $decimal);
-    }
-
-    /**
-     * @param $decimal
-     * @return bool
-     */
-    protected function validateCountData($decimal) {
-        return $decimal && preg_match(self::QUANTITY_PATTERN, $decimal);
     }
 }

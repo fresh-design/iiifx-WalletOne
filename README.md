@@ -61,7 +61,7 @@ $kkm->setTitle($sendComment)
 # Проверяем на валидность и формируем массив с объектом(и)
 
 if(!$kkmJson = KKM::arrayOfObjectsToJson([$kkm])) {
-    throw new ErrorException(__('Проблема при формировании объекта  ККМ'));
+    throw new ErrorException('Проблема при формировании объекта  ККМ');
 }
 
 

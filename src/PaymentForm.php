@@ -12,7 +12,7 @@ class PaymentForm {
     /**
      * @var string
      */
-    private $gateLink = 'https://www.walletone.com/checkout/default.aspx';
+    private $gateLink = 'https://wl.walletone.com/checkout/checkout/Index';
 
     /**
      * @var string
